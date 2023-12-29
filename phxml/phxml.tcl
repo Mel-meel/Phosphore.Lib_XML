@@ -75,12 +75,15 @@ proc phxml::string_xml_ {chaine} {
 # !TOUT dans l'arborescence doit être sous forme de dictionnaire
 ##
 proc phxml::var_xml {var {xml ""}} {
+    set xml_tmp ""
+    regexp {^value is a (.*?) with a refcount} [::tcl::unsupported::representation $var] -> type
+
     foreach {k v} $var {
-        if {[Phosphore_dict_ $v] == 1} {
-            set xml_tmp [BaseKalinka_var_XML $v]
-            set xml_tmp "<$k>\n$xml_tmp</$k>"
+        if {$type == "dict"} {
+            set xml_tmp [phxml::var_xml $v]
+            set xml_tmp "<$k>$xml_tmp</$k>\n"
         } else {
-            set xml_tmp "<$k>$v</$k>\n"
+            set xml_tmp "\n$var\n"
         }
         set xml "$xml$xml_tmp"
     }
@@ -102,3 +105,9 @@ proc phxml::string_balise_ {chaine} {
     }
     return $res
 }
+
+proc phxml::string_var_is_dict_ {value} {
+    return [expr {[string is list $value] && ([llength $value]&1) == 0}]
+}
+
+package provide phxml 0.0.1
