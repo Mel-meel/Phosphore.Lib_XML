@@ -25,10 +25,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>. #
 #########################################################################
 
+namespace eval phxml {
+    namespace export -clear phxml
+}
+
 ##
 # Enregistre toute une arborescence XML dans des dictionnaires
 ##
-proc BaseKalinka_XML_var {xml {var ""}} {
+proc phxml::xml_var {xml {var ""}} {
     set debut 0
     set res [dict create]
     while {[string first "<" $xml $debut] != -1} {
@@ -45,8 +49,8 @@ proc BaseKalinka_XML_var {xml {var ""}} {
         # Si le contenu de la balise est du XML, il faut recommencer l'opération
         # avec le contenu, jusqu'à ce que tous les sous-éléments soit enregistrés
         # dans un dictionnaire
-        if {[BaseKalinka_string_XML_ $contenu]} {
-            dict set res $balise_o [BaseKalinka_XML_var $contenu]
+        if {[phxml::string_xml_ $contenu]} {
+            dict set res $balise_o [phxml::xml_var $contenu]
         } else {
             dict set res $balise_o $contenu
         }
@@ -58,9 +62,9 @@ proc BaseKalinka_XML_var {xml {var ""}} {
 ##
 # Test si une chaine contient du XML
 ##
-proc BaseKalinka_string_XML_ {chaine} {
+proc phxml::string_xml_ {chaine} {
     set res 0
-    if {[Phosphore_string_balise_ $chaine]} {
+    if {[phxml::string_balise_ $chaine]} {
         set res 1
     }
     return $res
@@ -70,7 +74,7 @@ proc BaseKalinka_string_XML_ {chaine} {
 # Transforme une arborescence de variable en XML
 # !TOUT dans l'arborescence doit être sous forme de dictionnaire
 ##
-proc BaseKalinka_var_XML {var {xml ""}} {
+proc phxml::var_xml {var {xml ""}} {
     foreach {k v} $var {
         if {[Phosphore_dict_ $v] == 1} {
             set xml_tmp [BaseKalinka_var_XML $v]
@@ -81,4 +85,20 @@ proc BaseKalinka_var_XML {var {xml ""}} {
         set xml "$xml$xml_tmp"
     }
     return $xml
+}
+
+##
+# Teste si une chaine contient des balises XML valides
+##
+proc phxml::string_balise_ {chaine} {
+    set res 0
+    set debut [string first "<" $chaine]
+    set fin [string first ">" $chaine $debut]
+    if {$debut != -1 && $fin != -1} {
+        set contenu [string range $chaine [expr $debut + 1] [expr $fin - 1]]
+        if {[string first "/$contenu" $chaine [expr $fin + 1]] != -1} {
+            set res 1
+        }
+    }
+    return $res
 }
