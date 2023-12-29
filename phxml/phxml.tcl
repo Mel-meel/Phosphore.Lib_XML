@@ -74,8 +74,11 @@ proc phxml::string_xml_ {chaine} {
 # Transforme une arborescence de variable en XML
 # !TOUT dans l'arborescence doit être sous forme de dictionnaire
 ##
-proc phxml::var_xml {var {xml ""}} {
+proc phxml::var_xml {var {xml ""}  {niveau 0}} {
     set xml_tmp ""
+    
+    set tabulation [phxml::tabulation_ $niveau]
+    
     regexp {^value is a (.*?) with a refcount} [::tcl::unsupported::representation $var] -> type
 
     foreach {k v} $var {
@@ -108,6 +111,18 @@ proc phxml::string_balise_ {chaine} {
 
 proc phxml::string_var_is_dict_ {value} {
     return [expr {[string is list $value] && ([llength $value]&1) == 0}]
+}
+
+proc phxml::tabulation_ {n} {
+    set res ""
+    
+    set n [expr $n * 4]
+    
+    for {set c 0} {$c <= $n} {set c [expr $c + 1]} {
+        set res "$res "
+    }
+    
+    return $res
 }
 
 package provide phxml 0.0.1
