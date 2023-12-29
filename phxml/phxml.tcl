@@ -74,8 +74,9 @@ proc phxml::string_xml_ {chaine} {
 # Transforme une arborescence de variable en XML
 # !TOUT dans l'arborescence doit être sous forme de dictionnaire
 ##
-proc phxml::var_xml {var {xml ""}  {niveau 0}} {
+proc phxml::var_xml {var {niveau 0}} {
     set xml_tmp ""
+    set xml ""
     
     set tabulation [phxml::tabulation_ $niveau]
     
@@ -83,12 +84,13 @@ proc phxml::var_xml {var {xml ""}  {niveau 0}} {
 
     foreach {k v} $var {
         if {$type == "dict"} {
-            set xml_tmp [phxml::var_xml $v]
-            set xml_tmp "<$k>$xml_tmp</$k>\n"
+            set xml_tmp [phxml::var_xml $v [expr $niveau + 1]]
+            set xml_tmp "<$k>$xml_tmp\n</$k>"
         } else {
-            set xml_tmp "\n$var\n"
+            set xml_tmp "$var"
         }
-        set xml "$xml$xml_tmp"
+        
+        set xml "$xml\n$xml_tmp"
     }
     return $xml
 }
