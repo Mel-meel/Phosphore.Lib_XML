@@ -9,4 +9,4 @@ At the future, it will allow to use DTD.
 
 ## U XML
 
-The package phuxml is an unorthodoxe way to make XML.
+The package **phuxml** provide an unorthodoxe way to make XML.

@@ -1,6 +1,7 @@
 lappend auto_path [file join [file dirname [file normalize [info script]]] "./"]
 
 package require phxml
+package require phuxml
 
 set dict_test [dict create "element" "0" "details" [dict create "colour" "orange" "fruit" "mango"]]
 

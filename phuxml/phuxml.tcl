@@ -25,14 +25,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>. #
 #########################################################################
 
-namespace eval phxml {
-    namespace export -clear phxml
+namespace eval phuxml {
+    namespace export -clear phuxml
 }
 
 ##
 # Enregistre toute une arborescence XML dans des dictionnaires
 ##
-proc phxml::xml_var {xml {var ""}} {
+proc phuxml::xml_var {xml {var ""}} {
     set debut 0
     set res [dict create]
     while {[string first "<" $xml $debut] != -1} {
@@ -49,8 +49,8 @@ proc phxml::xml_var {xml {var ""}} {
         # Si le contenu de la balise est du XML, il faut recommencer l'opération
         # avec le contenu, jusqu'à ce que tous les sous-éléments soit enregistrés
         # dans un dictionnaire
-        if {[phxml::string_xml_ $contenu]} {
-            dict set res $balise_o [phxml::xml_var $contenu]
+        if {[phuxml::string_xml_ $contenu]} {
+            dict set res $balise_o [phuxml::xml_var $contenu]
         } else {
             dict set res $balise_o $contenu
         }
@@ -62,9 +62,9 @@ proc phxml::xml_var {xml {var ""}} {
 ##
 # Test si une chaine contient du XML
 ##
-proc phxml::string_xml_ {chaine} {
+proc phuxml::string_xml_ {chaine} {
     set res 0
-    if {[phxml::string_balise_ $chaine]} {
+    if {[phuxml::string_balise_ $chaine]} {
         set res 1
     }
     return $res
@@ -74,17 +74,17 @@ proc phxml::string_xml_ {chaine} {
 # Transforme une arborescence de variable en XML
 # !TOUT dans l'arborescence doit être sous forme de dictionnaire
 ##
-proc phxml::var_xml {var {niveau 0}} {
+proc phuxml::var_xml {var {niveau 0}} {
     set xml_tmp ""
     set xml ""
     
-    set tabulation [phxml::tabulation_ $niveau]
+    set tabulation [phuxml::tabulation_ $niveau]
     
     regexp {^value is a (.*?) with a refcount} [::tcl::unsupported::representation $var] -> type
 
     foreach {k v} $var {
         if {$type == "dict"} {
-            set xml_tmp [phxml::var_xml $v [expr $niveau + 1]]
+            set xml_tmp [phuxml::var_xml $v [expr $niveau + 1]]
             set xml_tmp "<$k>$xml_tmp\n</$k>"
         } else {
             set xml_tmp "$var"
@@ -98,7 +98,7 @@ proc phxml::var_xml {var {niveau 0}} {
 ##
 # Teste si une chaine contient des balises XML valides
 ##
-proc phxml::string_balise_ {chaine} {
+proc phuxml::string_balise_ {chaine} {
     set res 0
     set debut [string first "<" $chaine]
     set fin [string first ">" $chaine $debut]
@@ -111,11 +111,11 @@ proc phxml::string_balise_ {chaine} {
     return $res
 }
 
-proc phxml::string_var_is_dict_ {value} {
+proc phuxml::string_var_is_dict_ {value} {
     return [expr {[string is list $value] && ([llength $value]&1) == 0}]
 }
 
-proc phxml::tabulation_ {n} {
+proc phuxml::tabulation_ {n} {
     set res ""
     
     set n [expr $n * 4]
@@ -127,4 +127,4 @@ proc phxml::tabulation_ {n} {
     return $res
 }
 
-package provide phxml 0.0.1
+package provide phuxml 0.0.1
